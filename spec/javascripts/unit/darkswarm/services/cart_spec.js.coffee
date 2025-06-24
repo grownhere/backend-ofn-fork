@@ -1,4 +1,4 @@
-describe 'Cart service', ->
+ describe 'Cart service', ->
   Cart = null
   Variants = null
   RailsFlashLoader = null
@@ -222,6 +222,48 @@ describe 'Cart service', ->
         expect(li.quantity).toEqual 1
         expect(li.max_quantity).toEqual 1
 
+    describe "dirty state management", ->
+      it "does not mark the cart dirty if no changes are made", ->
+        li =
+          variant:
+            id: 1
+            on_hand: 5
+            on_demand: false
+          quantity: 3
+        Cart.line_items = [li]
+        Cart.dirty = false
+
+        stockLevels = {
+          1: {
+            on_hand: 5
+            on_demand: false
+          }
+        }
+
+        Cart.compareAndNotifyStockLevels stockLevels
+        expect(Cart.dirty).toBe(false)
+
+      it "marks the cart dirty if quantity is adjusted due to stock level", ->
+        li =
+          variant:
+            id: 1
+            on_hand: 10
+            on_demand: false
+          quantity: 6
+        Cart.line_items = [li]
+        Cart.dirty = false
+
+        stockLevels = {
+          1: {
+            on_hand: 4
+            on_demand: false
+          }
+        }
+
+        Cart.compareAndNotifyStockLevels stockLevels
+        expect(li.quantity).toEqual(4)
+        expect(Cart.dirty).toBe(true)
+
   describe "when modifying a confirmed order", ->
     it "displays flash error when attempting to remove final item", ->
       spyOn(RailsFlashLoader, 'loadFlash')
@@ -241,3 +283,4 @@ describe 'Cart service', ->
     expect(Cart.line_items).not.toEqual []
     Cart.clear()
     expect(Cart.line_items).toEqual []
+ 
