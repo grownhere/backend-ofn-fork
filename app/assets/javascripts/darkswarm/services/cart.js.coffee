@@ -57,7 +57,10 @@ angular.module('Darkswarm').factory 'Cart', (CurrentOrder, Variants, $timeout, $
       scope = $rootScope.$new(true)
       scope.variants = []
 
-      # TODO: These changes to quantity/max_quantity trigger another cart update, which is unnecessary.
+      # Temporarily disable update triggering by preventing dirty state
+      suppress_order_change = true
+      original_dirty = @dirty
+
       for li in @line_items when li.quantity > 0
         continue unless stockLevels[li.variant.id]?
 
@@ -66,14 +69,21 @@ angular.module('Darkswarm').factory 'Cart', (CurrentOrder, Variants, $timeout, $
         continue if li.variant.on_demand
 
         if li.quantity > li.variant.on_hand
+          suppress_order_change = false
           li.quantity = li.variant.on_hand
           scope.variants.push li.variant
+
         if li.variant.on_hand == 0 && li.max_quantity > li.variant.on_hand
+          suppress_order_change = false
           li.max_quantity = li.variant.on_hand
           scope.variants.push(li.variant) unless li.variant in scope.variants
 
+      # Restore dirty state only if a real cart change happened
+      @dirty = original_dirty if suppress_order_change
+
       if scope.variants.length > 0
         $modal.open(templateUrl: "out_of_stock.html", scope: scope, windowClass: 'out-of-stock-modal')
+
 
     popQueue: =>
       @update_enqueued = false

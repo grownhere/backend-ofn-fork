@@ -360,7 +360,7 @@ en_GB:
       userguide: "GrownHere User Guide"
       email_admin_html: "You can manage your account by logging into the %{link} or by clicking on 'Profile' in the top right hand side of the homepage, and selecting Administration."
       admin_panel: "Admin Panel"
-      email_community_html: "There is also an online forum for community discussions related to the OFN software used at GrownHere and the unique challenges of running a food enterprise. You are encouraged to join in. The OFN is constantly evolving and your input into this forum will shape what happens next. %{link}"
+      email_community_html: "There is also an online forum for community discussions related to the OFN software used at GrownHere and the unique challenges of running a food enterprise. You are encouraged to join in. The OFN is constantly evolving and your input into their forum will shape what happens next with the open-source software that we use at GrownHere. %{link}"
       join_community: "Join the community"
     invite_manager:
       subject: "%{enterprise} has invited you to be a manager"
